@@ -138,7 +138,7 @@ def get_inventories(inventory_id):
     """
     inventory = Inventory.find(inventory_id)
     if not inventory:
-        raise NotFound("Inventory with id '{}' was not found.".format(inventory_id))
+      raise NotFound("Inventory with id '{}' was not found.".format(inventory_id))
     return make_response(jsonify(inventory.serialize()), status.HTTP_200_OK)
 
 
