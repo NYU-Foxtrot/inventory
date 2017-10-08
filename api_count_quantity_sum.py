@@ -20,7 +20,7 @@ def list_resources(id):
 
 	find_by_id_records = Inventory.findAll_by_id(id)
 	
-    if find_by_id_records
+    if find_by_id_records:
         quantity_sum = sum([ record.quantity for record in find_by_id_records])
         message = {'quantity_sum' : quantity_sum}
         return_code = HTTP_200_OK

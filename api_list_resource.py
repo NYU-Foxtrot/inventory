@@ -16,7 +16,7 @@ def list_resources():
 
 	all_inventory_records = Inventory.all()
 	
-    if all_inventory_records
+    if all_inventory_records:
         message = [ record.serialize() for record in all_inventory_records]
         return_code = HTTP_200_OK
     else:
