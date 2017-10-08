@@ -51,15 +51,44 @@ class TestInventoryServer(unittest.TestCase):
 
     def test_get_inventory(self):
         """ Get one Inventory """
+        resp = self.app.get('/inventories/2')
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = json.loads(resp.data)
+        self.assertEqual(data['name'], 'conditioner')
 
     def test_get_inventory_not_found(self):
         """ Get a Inventory that's not found """
+        resp = self.app.get('/inventories/0')
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_create_inventory(self):
         """ Create a Inventory """
+        # save the current number of inventories for later comparrison
+        inventory_count = self.get_inventory_count()
+        # add a new inventory
+        new_inventory = {'name': 'body wash', 'quantity': 1, 'status': 'new'}
+        data = json.dumps(new_inventory)
+        resp = self.app.post('/inventories', data=data, content_type='application/json')
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+        # Make sure location header is set
+        location = resp.headers.get('Location', None)
+        self.assertIsNotNone(location)
+        # Check the data is correct
+        new_json = json.loads(resp.data)
+        self.assertEqual(new_json['name'], 'body wash')
+        # check that count has gone up and includes body wash
+        resp = self.app.get('/inventories')
+        data = json.loads(resp.data)
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(data), inventory_count + 1)
+        self.assertIn(new_json, data)
 
     def test_create_inventory_with_no_name(self):
         """ Create a Inventory with the name missing """
+        new_inventory = {'status': 'new'}
+        data = json.dumps(new_inventory)
+        resp = self.app.post('/inventories', data=data, content_type='application/json')
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_update_inventory(self):
         """ Update an Inventory """

@@ -138,7 +138,7 @@ def get_inventories(inventory_id):
     """
     inventory = Inventory.find(inventory_id)
     if not inventory:
-        raise NotFound("Pet with id '{}' was not found.".format(inventory_id))
+      raise NotFound("Inventory with id '{}' was not found.".format(inventory_id))
     return make_response(jsonify(inventory.serialize()), status.HTTP_200_OK)
 
 
@@ -151,6 +151,15 @@ def create_inventories():
     Creates a Inventory
     This endpoint will create a Inventory based the data in the body that is posted
     """
+    inventory = Inventory()
+    inventory.deserialize(request.get_json())
+    inventory.save()
+    message = inventory.serialize()
+    location_url = url_for('get_inventories', inventory_id=inventory.id, _external=True)
+    return make_response(jsonify(message), status.HTTP_201_CREATED,
+                         {
+                             'Location': location_url
+                         })
 
 
 ######################################################################
