@@ -129,6 +129,17 @@ class Inventory(object):
         if ProductInventories:
             return ProductInventories[0]
         return None
+    
+    @staticmethod
+    def findAll_by_id(ProductInventory_id):
+        """ Finds a ProductInventory by it's ID """
+        if not Inventory.data:
+            return None
+        ProductInventories = [productInventory for productInventory in Inventory.data if
+                             productInventory.id == ProductInventory_id]
+        if ProductInventories:
+            return ProductInventories
+        return None
 
     @staticmethod
     def find_by_status(status):
