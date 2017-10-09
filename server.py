@@ -203,16 +203,12 @@ def delete_inventories(inventory_id):
 @app.route('/inventories/count', methods=['GET'])
 def count_inventories_quantity():
 	# return a list of Inventory
-     
     name = request.args.get('name')
     if name:
-	    find_by_id_records = Inventory.find_by_name(name)
-        quantity_sum = sum([ record.quantity for record in find_by_id_records])
+        find_by_id_records = Inventory.find_by_name(name)
+        quantities = [ record.quantity for record in find_by_id_records]
+        quantity_sum = sum(quantities)
         message = {'count' : quantity_sum}
-        # else:
-        #     message = {'error' : 'Fetch inventory records error'}
-        #     return_code = status.HTTP_404_NOT_FOUND
-
     return make_response(jsonify(message),  status.HTTP_200_OK )
 
 

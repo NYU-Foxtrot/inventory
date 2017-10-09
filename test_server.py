@@ -138,7 +138,7 @@ class TestInventoryServer(unittest.TestCase):
         new_inventory = {'name': 'body wash', 'quantity': 2, 'status': 'new'}
         used_inventory2 = {'name': 'body wash', 'quantity': 1, 'status': 'used'}
         data = json.dumps(new_inventory)
-        data2 = json.dumps(new_inventory2)
+        data2 = json.dumps(used_inventory2)
         
         resp = self.app.post('/inventories', data=data, content_type='application/json')
         resp2 = self.app.post('/inventories', data=data2, content_type='application/json')
@@ -150,9 +150,9 @@ class TestInventoryServer(unittest.TestCase):
         self.assertIsNotNone(location)
 
         resp = self.app.get('/inventories/count', query_string='name=body wash')
-        data = json.loads(resp.data)
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
-        self.assertEqual(resp.count, 3)
+        data = json.loads(resp.data)
+        self.assertEqual(data['count'], 3)
 
     ######################################################################
     # Utility functions
