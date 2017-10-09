@@ -22,6 +22,7 @@ GET /inventories/{id} - Returns the Inventory with a given id number
 POST /inventories - creates a new Inventory record in the database
 PUT /inventories/{id} - updates a Inventory record in the database
 DELETE /inventories/{id} - deletes a Inventory record in the database
+GET /inventories/count - get total amount of product with given name/id/status(whatever status)
 """
 
 import os
@@ -195,6 +196,24 @@ def delete_inventories(inventory_id):
     if inventory:
         inventory.delete()
     return make_response('', status.HTTP_204_NO_CONTENT)
+
+######################################################################
+# COUNT TOTAL QUANTITY OF PRODUCT WITH GIVEN NAME
+######################################################################
+@app.route('/inventories/count', methods=['GET'])
+def count_inventories_quantity():
+	# return a list of Inventory
+     
+    name = request.args.get('name')
+    if name:
+	    find_by_id_records = Inventory.find_by_name(name)
+        quantity_sum = sum([ record.quantity for record in find_by_id_records])
+        message = {'count' : quantity_sum}
+        # else:
+        #     message = {'error' : 'Fetch inventory records error'}
+        #     return_code = status.HTTP_404_NOT_FOUND
+
+    return make_response(jsonify(message),  status.HTTP_200_OK )
 
 
 ######################################################################

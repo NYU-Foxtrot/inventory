@@ -132,7 +132,7 @@ class TestInventoryServer(unittest.TestCase):
     def test_query_inventory_list_by_name(self):
         """ Query Inventories by Name """
 
-    def test_count_inventory_quantity(self):
+    def test_count_inventories_quantity(self):
         """ Count total quantity of product"""
         # add a new inventory
         new_inventory = {'name': 'body wash', 'quantity': 2, 'status': 'new'}
@@ -151,6 +151,7 @@ class TestInventoryServer(unittest.TestCase):
 
         resp = self.app.get('/inventories/count', query_string='name=body wash')
         data = json.loads(resp.data)
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
         self.assertEqual(resp.count, 3)
 
     ######################################################################
