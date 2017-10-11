@@ -12,13 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """
-Models for ProductInventory in inventory
+Models for Inventory in inventory
 
 All of the models are stored in this module
 
 Models
 ------
-ProductInventory - ProductInventory used in inventory management and operation
+Inventory - Inventory used in inventory management and operation
 
 Attributes:
 -----------
@@ -29,7 +29,7 @@ status (string) - the status of the inventory : new, openBox and used
 
 """
 import threading
-import enum
+#import enum
 
 
 class DataValidationError(Exception):
@@ -37,24 +37,24 @@ class DataValidationError(Exception):
     pass
 
 
-class ProductStatus(enum.Enum):
-    new = 'new'
-    damaged = 'openBox'
-    used = 'used'
+# class ProductStatus(enum.Enum):
+#     new = 'new'
+#     openBox = 'openBox'
+#     used = 'used'
 
 
 class Inventory(object):
     """
     Class that represents 
 
-    This version uses an in-memory collection of ProductInventories for testing
+    This version uses an in-memory collection of Inventories for testing
     """
     lock = threading.Lock()
     data = []
     index = 0
 
-    def __init__(self, inventoryid=0, name='', quantity=0, status=ProductStatus.new):
-        """ Initialize a ProductInventory """
+    def __init__(self, inventoryid=0, name='', quantity=0, status=''):
+        """ Initialize a Inventory """
         self.id = inventoryid
         self.name = name
         self.quantity = quantity
@@ -78,18 +78,18 @@ class Inventory(object):
         Inventory.data.remove(self)
 
     def serialize(self):
-        """ Serializes ProductInventory into a dictionary """
+        """ Serializes Inventory into a dictionary """
         return {"id": self.id, "name": self.name, "quantity": self.quantity, "status": self.status}
 
     def deserialize(self, data):
         """
-        Deserializes a ProductInventory from a dictionary
+        Deserializes a Inventory from a dictionary
 
         Args:
-            data (dict): A dictionary containing the ProductInventory data
+            data (dict): A dictionary containing the Inventory data
         """
         if not isinstance(data, dict):
-            raise DataValidationError('Invalid ProductInventory: body of request contained bad or no data')
+            raise DataValidationError('Invalid Inventory: body of request contained bad or no data')
         if data.has_key('id'):
             self.id = data['id']
         try:
@@ -97,7 +97,7 @@ class Inventory(object):
             self.quantity = data['quantity']
             self.status = data['status']
         except KeyError as err:
-            raise DataValidationError('Invalid ProductInventory: missing ' + err.args[0])
+            raise DataValidationError('Invalid Inventory: missing ' + err.args[0])
         return
 
     @staticmethod
@@ -109,50 +109,50 @@ class Inventory(object):
 
     @staticmethod
     def all():
-        """ Returns all of the ProductInventories in the database """
-        return [productInventory for productInventory in Inventory.data]
+        """ Returns all of the Inventories in the database """
+        return [inventory for inventory in Inventory.data]
 
     @staticmethod
     def remove_all():
-        """ Removes all of the ProductInventories from the database """
+        """ Removes all of the Inventories from the database """
         del Inventory.data[:]
         Inventory.index = 0
         return Inventory.data
 
     @staticmethod
     def find(ProductInventory_id):
-        """ Finds a ProductInventory by it's ID """
+        """ Finds a Inventory by it's ID """
         if not Inventory.data:
             return None
-        ProductInventories = [productInventory for productInventory in Inventory.data if
-                             productInventory.id == ProductInventory_id]
-        if ProductInventories:
-            return ProductInventories[0]
+        Inventories = [inventory for inventory in Inventory.data if
+                             inventory.id == ProductInventory_id]
+        if Inventories:
+            return Inventories[0]
         return None
 
     @staticmethod
     def find_by_status(status):
-        """ Returns all of the ProductInventories in a status
+        """ Returns all of the Inventories in a status
 
         Args:
-         status (string): the status of the ProductInventories you want to match
+         status (string): the status of the Inventories you want to match
         """
-        return [productInventory for productInventory in Inventory.data if productInventory.status == status]
+        return [inventory for inventory in Inventory.data if inventory.status == status]
 
     @staticmethod
     def find_by_quantity(quantity):
-        """ Returns all of the ProductInventories in a status
+        """ Returns all of the Inventories in a status
 
         Args:
-         quantity (int): the quantity of the ProductInventories you want to match
+         quantity (int): the quantity of the Inventories you want to match
         """
-        return [productInventory for productInventory in Inventory.data if productInventory.quantity == quantity]
+        return [inventory for inventory in Inventory.data if inventory.quantity == quantity]
 
     @staticmethod
     def find_by_name(name):
-        """ Returns all ProductInventories with the given name
+        """ Returns all Inventories with the given name
 
         Args:
-            name (string): the name of the ProductInventories you want to match
+            name (string): the name of the Inventories you want to match
         """
-        return [productInventory for productInventory in Inventory.data if productInventory.name == name]
+        return [inventory for inventory in Inventory.data if inventory.name == name]

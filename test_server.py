@@ -21,14 +21,14 @@ class TestInventoryServer(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """ Run once before all tests """
-        server.app.debug = False
+        server.app.debug = True
         server.initialize_logging(logging.ERROR)
 
     def setUp(self):
         """ Runs before each test """
         server.Inventory.remove_all()
-        server.Inventory(0, "shampoo", 2, "new").save()
-        server.Inventory(0, "conditioner", 5, "new").save()
+        server.Inventory(0, "shampoo", 2, 'new').save()
+        server.Inventory(0, "conditioner", 5, 'new').save()
         self.app = server.app.test_client()
 
     def tearDown(self):
@@ -126,11 +126,17 @@ class TestInventoryServer(unittest.TestCase):
         new_count = self.get_inventory_count()
         self.assertEqual(new_count, inventory_count - 1)
 
-    def test_query_inventory_list_by_category(self):
-        """ Query Inventories by Category """
+    def test_query_inventory_found(self):
+        """ Query Inventories by Category found target"""
+        resp = self.app.get('/inventories/query', query_string = 'name=shampoo&status=new' )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = json.loads(resp.data)
+        self.assertEqual(len(data), 1)
 
-    def test_query_inventory_list_by_name(self):
-        """ Query Inventories by Name """
+    def test_query_inventory_not_found(self):
+        """ Query Inventories by Category not found target"""
+        resp = self.app.get('/inventories/query', query_string = 'name=shampoo&status=used')
+        self.assertEquals(resp.status_code, 404)
 
     def test_count_inventories_quantity(self):
         """ Count total quantity of product"""
