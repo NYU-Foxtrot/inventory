@@ -109,22 +109,22 @@ def index():
 def list_inventories():
     """ Returns all of the Inventories """
     inventories = []
-    # quantity = request.args.get('quantity')
-    # status = request.args.get('status')
-    # name = request.args.get('name')
-    # if quantity:
-    #     inventories = Inventory.find_by_quantity(quantity)
-    # # here find_by_status() has some problem
-    # elif status:
-    #     inventories = Inventory.find_by_status(status)
-    # elif name:
-    #     inventories = Inventory.find_by_name(name)
-    # else:
-    #     inventories = Inventory.all()
+    quantity = request.args.get('quantity')
+    status = request.args.get('status')
+    name = request.args.get('name')
+    if quantity:
+        inventories = Inventory.find_by_quantity(quantity)
+    # here find_by_status() has some problem
+    elif status:
+        inventories = Inventory.find_by_status(status)
+    elif name:
+        inventories = Inventory.find_by_name(name)
+    else:
+        inventories = Inventory.all()
     inventories = Inventory.all()
 
     results = [inventory.serialize() for inventory in inventories]
-    return make_response(jsonify(results), status.HTTP_200_OK)
+    return make_response(jsonify(results))
 
 
 ######################################################################
@@ -215,6 +215,19 @@ def count_inventories_quantity():
 ######################################################################
 # QUERY INVENTORIES
 ######################################################################
+@app.route('/inventories/query', methods = ['GET'])
+def query_inventories_by_name_status():
+    name = request.args.get('name').strip()
+    status = request.args.get('status').strip()
+   
+    # query by name and status
+    inventories_by_id = Inventory.find_by_name(name)
+    inventories_by_status = Inventory.find_by_status(status)
+    if not inventories_by_status or not inventories_by_id :
+        raise NotFound("Query Inventory with name '{}' and status '{}'  was not found.".format(name, status))
+    results = [inventory.serialize() for inventory in inventories_by_id  if
+                            inventory in inventories_by_status]
+    return make_response(jsonify(results))
 
 
 ######################################################################
