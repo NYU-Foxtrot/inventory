@@ -132,6 +132,28 @@ class TestInventoryServer(unittest.TestCase):
     def test_query_inventory_list_by_name(self):
         """ Query Inventories by Name """
 
+    def test_count_inventories_quantity(self):
+        """ Count total quantity of product"""
+        # add a new inventory
+        new_inventory = {'name': 'body wash', 'quantity': 2, 'status': 'new'}
+        used_inventory2 = {'name': 'body wash', 'quantity': 1, 'status': 'used'}
+        data = json.dumps(new_inventory)
+        data2 = json.dumps(used_inventory2)
+        
+        resp = self.app.post('/inventories', data=data, content_type='application/json')
+        resp2 = self.app.post('/inventories', data=data2, content_type='application/json')
+
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(resp2.status_code, status.HTTP_201_CREATED)
+        # Make sure location header is set
+        location = resp.headers.get('Location', None)
+        self.assertIsNotNone(location)
+
+        resp = self.app.get('/inventories/count', query_string='name=body wash')
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = json.loads(resp.data)
+        self.assertEqual(data['count'], 3)
+
     ######################################################################
     # Utility functions
     ######################################################################
@@ -142,6 +164,7 @@ class TestInventoryServer(unittest.TestCase):
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = json.loads(resp.data)
         return len(data)
+
 
 
 ######################################################################
