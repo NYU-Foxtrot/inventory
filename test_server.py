@@ -21,7 +21,7 @@ class TestInventoryServer(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """ Run once before all tests """
-        server.app.debug = True
+        server.app.debug = False
         server.initialize_logging(logging.ERROR)
 
     def setUp(self):

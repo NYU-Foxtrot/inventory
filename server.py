@@ -17,12 +17,13 @@ Inventory Store Service
 
 Paths:
 ------
-GET /inventories - Returns a list all of the Inventories
-GET /inventories/{id} - Returns the Inventory with a given id number
+GET /inventories - returns a list all of the Inventories
+GET /inventories/{id} - returns the Inventory with a given id number
 POST /inventories - creates a new Inventory record in the database
 PUT /inventories/{id} - updates a Inventory record in the database
 DELETE /inventories/{id} - deletes a Inventory record in the database
-GET /inventories/count - get total amount of product with given name/id/status(whatever status)
+GET /inventories/count - returns total amount of product with given name/id/status(whatever status)
+GET /inventories/query - returns the inventory record based on the query string (name and status)
 """
 
 import os
