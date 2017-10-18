@@ -114,8 +114,8 @@ def list_inventories():
     status = request.args.get('status')
     name = request.args.get('name')
     if quantity:
-        inventories = Inventory.find_by_quantity(quantity)
-    # here find_by_status() has some problem
+        q = int(quantity)
+        inventories = Inventory.find_by_quantity(q)
     elif status:
         inventories = Inventory.find_by_status(status)
     elif name:
