@@ -126,16 +126,16 @@ class TestInventoryServer(unittest.TestCase):
         new_count = self.get_inventory_count()
         self.assertEqual(new_count, inventory_count - 1)
 
-    # def test_query_inventory_quantity(self):
-    #     """ Get a list of Inventories with quantity """
-    #     resp = self.app.get('/inventories', query_string='quantity=5')
-    #     self.assertEqual(resp.status_code, status.HTTP_200_OK)
-    #     self.assertTrue(len(resp.data) > 0)
-    #     self.assertTrue('conditioner' in resp.data)
-    #     self.assertFalse('shampoo' in resp.data)
-    #     data = json.loads(resp.data)
-    #     query_item = data[0]
-    #     self.assertEqual(query_item['quantity'], 5)
+    def test_query_inventory_quantity(self):
+        """ Get a list of Inventories with quantity """
+        resp = self.app.get('/inventories', query_string='quantity=5')
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        self.assertTrue(len(resp.data) > 0)
+        self.assertTrue('conditioner' in resp.data)
+        self.assertFalse('shampoo' in resp.data)
+        data = json.loads(resp.data)
+        query_item = data[0]
+        self.assertEqual(query_item['quantity'], 5)
 
     def test_query_inventory_found(self):
         """ Query Inventories by Category found target"""

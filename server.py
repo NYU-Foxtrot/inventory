@@ -122,7 +122,6 @@ def list_inventories():
         inventories = Inventory.find_by_name(name)
     else:
         inventories = Inventory.all()
-    inventories = Inventory.all()
 
     results = [inventory.serialize() for inventory in inventories]
     return make_response(jsonify(results))
