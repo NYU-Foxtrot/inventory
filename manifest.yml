@@ -6,6 +6,6 @@ applications:
   name: nyu-inventory-service-f17
   host: nyu-inventory-service-f17
   disk_quota: 1024M
-  buildpack: python_buildpack
   services:
   - RedisCloud
+  buildpack: python_buildpack

@@ -35,19 +35,35 @@ Vagrant.configure(2) do |config|
     config.vm.provision "file", source: "~/.ssh/id_rsa", destination: "~/.ssh/id_rsa"
   end
 
-  # Enable provisioning with a shell script. Additional provisioners such as
-  # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
-  # documentation for more information about their specific syntax and use.
+  ######################################################################
+  # Setup a Python development environment
+  ######################################################################
   config.vm.provision "shell", inline: <<-SHELL
+    #apt-get update && apt-get upgrade -y && apt-get dist-upgrade -y
     apt-get update
-    apt-get install -y git python-pip python-dev build-essential
-    pip install --upgrade pip
+    apt-get install -y wget git zip tree python-pip python-dev
     apt-get -y autoremove
-    # Install app dependencies
-    cd /vagrant
-    sudo pip install -r requirements.txt
+    pip install --upgrade pip
     # Make vi look nice
     sudo -H -u ubuntu echo "colorscheme desert" > ~/.vimrc
+    echo "\n****************************"
+    echo " Installing the Bluemix CLI"
+    echo "****************************\n"
+    wget https://clis.ng.bluemix.net/download/bluemix-cli/latest/linux64
+    tar -zxvf linux64
+    cd Bluemix_CLI/
+    ./install_bluemix_cli
+    cd ..
+    rm -fr Bluemix_CLI/
+    rm linux64
+    
+    # Install app dependencies
+    echo "\n******************************"
+    echo " Installing app dependencies"
+    echo "******************************\n"
+    cd /vagrant
+    sudo pip install -r requirements.txt
   SHELL
+
 
 end
