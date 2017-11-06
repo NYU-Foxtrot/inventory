@@ -1,5 +1,7 @@
 Flask==0.12
 Flask-API==0.6.9
+redis>=2.10
+Cerberus==1.1
 # Testing
 pylint
 mock==2.0.0
@@ -13,3 +15,9 @@ expects==0.8.0
 # Code coverage
 coverage==4.2
 codecov==2.0.5
+# BDD
+behave==1.2.5
+selenium==3.3.1
+requests==2.13.0
+# Runtime
+honcho
