@@ -29,7 +29,7 @@ GET /inventories/query - returns the inventory record based on the query string 
 import os
 import sys
 import logging
-from flask import Flask, jsonify, request, url_for, make_response
+from flask import Flask, jsonify, request, json, url_for, make_response, abort
 from flask_api import status  # HTTP Status Codes
 from werkzeug.exceptions import NotFound
 from models import Inventory, DataValidationError
@@ -233,7 +233,33 @@ def query_inventories_by_name_status():
 ######################################################################
 #  U T I L I T Y   F U N C T I O N S
 ######################################################################
-def initialize_logging(log_level):
+@app.before_first_request
+def init_db(redis=None):
+    """ Initlaize the model """
+    Inventory.init_db(redis)
+
+
+# load sample data
+def data_load(payload):
+    """ Loads an Inventory into the database """
+    inventory = Inventory(0, payload['name'], payload['quantity'], payload['status'])
+    inventory.save()
+
+
+def data_reset():
+    """ Removes all Inventories from the database """
+    Inventory.remove_all()
+
+
+def check_content_type(content_type):
+    """ Checks that the media type is correct """
+    if request.headers['Content-Type'] == content_type:
+        return
+    app.logger.error('Invalid Content-Type: %s', request.headers['Content-Type'])
+    abort(status.HTTP_415_UNSUPPORTED_MEDIA_TYPE, 'Content-Type must be {}'.format(content_type))
+
+
+def initialize_logging(log_level=logging.INFO):
     """ Initialized the default logging to STDOUT """
     if not app.debug:
         print 'Setting up logging...'

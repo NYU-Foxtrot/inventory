@@ -267,3 +267,64 @@ class Inventory(object):
         #     name (string): the name of the Inventories you want to match
         # """
         # return [inventory for inventory in Inventory.data if inventory.name == name]
+
+######################################################################
+#  R E D I S   D A T A B A S E   C O N N E C T I O N   M E T H O D S
+######################################################################
+
+    @staticmethod
+    def connect_to_redis(hostname, port, password):
+        """ Connects to Redis and tests the connection """
+        Inventory.logger.info("Testing Connection to: %s:%s", hostname, port)
+        Inventory.redis = Redis(host=hostname, port=port, password=password)
+        try:
+            Inventory.redis.ping()
+            Inventory.logger.info("Connection established")
+        except ConnectionError:
+            Inventory.logger.info("Connection Error from: %s:%s", hostname, port)
+            Inventory.redis = None
+        return Inventory.redis
+
+    @staticmethod
+    def init_db(redis=None):
+        """
+        Initialized Redis database connection
+        This method will work in the following conditions:
+          1) In Bluemix with Redis bound through VCAP_SERVICES
+          2) With Redis running on the local server as with Travis CI
+          3) With Redis --link in a Docker container called 'redis'
+          4) Passing in your own Redis connection object
+        Exception:
+        ----------
+          redis.ConnectionError - if ping() test fails
+        """
+        if redis:
+            Inventory.logger.info("Using client connection...")
+            Inventory.redis = redis
+            try:
+                Inventory.redis.ping()
+                Inventory.logger.info("Connection established")
+            except ConnectionError:
+                Inventory.logger.error("Client Connection Error!")
+                Inventory.redis = None
+                raise ConnectionError('Could not connect to the Redis Service')
+            return
+        # Get the credentials from the Bluemix environment
+        if 'VCAP_SERVICES' in os.environ:
+            Inventory.logger.info("Using VCAP_SERVICES...")
+            vcap_services = os.environ['VCAP_SERVICES']
+            services = json.loads(vcap_services)
+            creds = services['rediscloud'][0]['credentials']
+            Inventory.logger.info("Conecting to Redis on host %s port %s",
+                            creds['hostname'], creds['port'])
+            Inventory.connect_to_redis(creds['hostname'], creds['port'], creds['password'])
+        else:
+            Inventory.logger.info("VCAP_SERVICES not found, checking localhost for Redis")
+            Inventory.connect_to_redis('127.0.0.1', 6379, None)
+            if not Inventory.redis:
+                Inventory.logger.info("No Redis on localhost, looking for redis host")
+                Inventory.connect_to_redis('redis', 6379, None)
+        if not Inventory.redis:
+            # if you end up here, redis instance is down.
+            Inventory.logger.fatal('*** FATAL ERROR: Could not connect to the Redis Service')
+            raise ConnectionError('Could not connect to the Redis Service')
