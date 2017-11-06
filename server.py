@@ -226,7 +226,9 @@ def query_inventories_by_name_status():
     inventories_by_status = Inventory.find_by_status(status)
     if not inventories_by_status or not inventories_by_name:
         raise NotFound("Query Inventory with name '{}' and status '{}'  was not found.".format(name, status))
-    results = [inventory.serialize() for inventory in inventories_by_name if inventory in inventories_by_status]
+    results1 = [inventory.serialize() for inventory in inventories_by_name]
+    results2 = [inventory.serialize() for inventory in inventories_by_status]
+    results = [r for r in results1 if r in results2]
     return make_response(jsonify(results))
 
 
