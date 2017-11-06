@@ -29,7 +29,7 @@ GET /inventories/query - returns the inventory record based on the query string 
 import os
 import sys
 import logging
-from flask import Flask, jsonify, request, url_for, make_response
+from flask import Flask, jsonify, request, json, url_for, make_response, abort
 from flask_api import status  # HTTP Status Codes
 from werkzeug.exceptions import NotFound
 from models import Inventory, DataValidationError
@@ -139,7 +139,7 @@ def get_inventories(inventory_id):
     """
     inventory = Inventory.find(inventory_id)
     if not inventory:
-      raise NotFound("Inventory with id '{}' was not found.".format(inventory_id))
+        raise NotFound("Inventory with id '{}' was not found.".format(inventory_id))
     return make_response(jsonify(inventory.serialize()), status.HTTP_200_OK)
 
 
@@ -197,43 +197,71 @@ def delete_inventories(inventory_id):
         inventory.delete()
     return make_response('', status.HTTP_204_NO_CONTENT)
 
+
 ######################################################################
 # COUNT TOTAL QUANTITY OF PRODUCT WITH GIVEN NAME
 ######################################################################
 @app.route('/inventories/count', methods=['GET'])
 def count_inventories_quantity():
-	# return a list of Inventory
+    # return a list of Inventory
     name = request.args.get('name')
     if name:
         find_by_id_records = Inventory.find_by_name(name)
-        quantities = [ record.quantity for record in find_by_id_records]
+        quantities = [record.quantity for record in find_by_id_records]
         quantity_sum = sum(quantities)
-        message = {'count' : quantity_sum}
-    return make_response(jsonify(message),  status.HTTP_200_OK )
+        message = {'count': quantity_sum}
+    return make_response(jsonify(message), status.HTTP_200_OK)
 
 
 ######################################################################
 # QUERY INVENTORIES
 ######################################################################
-@app.route('/inventories/query', methods = ['GET'])
+@app.route('/inventories/query', methods=['GET'])
 def query_inventories_by_name_status():
-    name = request.args.get('name').strip()
-    status = request.args.get('status').strip()
-   
+    name = request.args.get('name')
+    status = request.args.get('status')
+
     # query by name and status
-    inventories_by_id = Inventory.find_by_name(name)
+    inventories_by_name = Inventory.find_by_name(name)
     inventories_by_status = Inventory.find_by_status(status)
-    if not inventories_by_status or not inventories_by_id :
+    if not inventories_by_status or not inventories_by_name:
         raise NotFound("Query Inventory with name '{}' and status '{}'  was not found.".format(name, status))
-    results = [inventory.serialize() for inventory in inventories_by_id  if
-                            inventory in inventories_by_status]
+    results1 = [inventory.serialize() for inventory in inventories_by_name]
+    results2 = [inventory.serialize() for inventory in inventories_by_status]
+    results = [r for r in results1 if r in results2]
     return make_response(jsonify(results))
 
 
 ######################################################################
 #  U T I L I T Y   F U N C T I O N S
 ######################################################################
-def initialize_logging(log_level):
+@app.before_first_request
+def init_db(redis=None):
+    """ Initlaize the model """
+    Inventory.init_db(redis)
+
+
+# load sample data
+def data_load(payload):
+    """ Loads an Inventory into the database """
+    inventory = Inventory(0, payload['name'], payload['quantity'], payload['status'])
+    inventory.save()
+
+
+def data_reset():
+    """ Removes all Inventories from the database """
+    Inventory.remove_all()
+
+
+def check_content_type(content_type):
+    """ Checks that the media type is correct """
+    if request.headers['Content-Type'] == content_type:
+        return
+    app.logger.error('Invalid Content-Type: %s', request.headers['Content-Type'])
+    abort(status.HTTP_415_UNSUPPORTED_MEDIA_TYPE, 'Content-Type must be {}'.format(content_type))
+
+
+def initialize_logging(log_level=logging.INFO):
     """ Initialized the default logging to STDOUT """
     if not app.debug:
         print 'Setting up logging...'

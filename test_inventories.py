@@ -6,7 +6,18 @@
 
 import unittest
 from models import Inventory, DataValidationError
+import server # to get Redis
 
+VCAP_SERVICES = {
+    'rediscloud': [
+        {'credentials': {
+            'password': '',
+            'hostname': '127.0.0.1',
+            'port': '6379'
+            }
+        }
+    ]
+}
 
 ######################################################################
 #  T E S T   C A S E S
@@ -15,6 +26,8 @@ class Testinventories(unittest.TestCase):
     """ Test Cases for inventories """
 
     def setUp(self):
+        """ Initialize the Redis database """
+        Inventory.init_db()
         Inventory.remove_all()
 
     def test_create_Inventory(self):
@@ -79,7 +92,7 @@ class Testinventories(unittest.TestCase):
     def test_deserialize_Inventory(self):
         """ Test deserialization of Inventory """
         data = {"id": 1, "name": "shampoo", "quantity": 2, "status": "new"}
-        testInventory = Inventory()
+        testInventory = Inventory(data['id'])
         testInventory.deserialize(data)
         self.assertNotEqual(testInventory, None)
         self.assertEqual(testInventory.id, 1)
