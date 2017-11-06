@@ -92,7 +92,7 @@ class Testinventories(unittest.TestCase):
     def test_deserialize_Inventory(self):
         """ Test deserialization of Inventory """
         data = {"id": 1, "name": "shampoo", "quantity": 2, "status": "new"}
-        testInventory = Inventory()
+        testInventory = Inventory(data['id'])
         testInventory.deserialize(data)
         self.assertNotEqual(testInventory, None)
         self.assertEqual(testInventory.id, 1)

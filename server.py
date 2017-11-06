@@ -139,7 +139,7 @@ def get_inventories(inventory_id):
     """
     inventory = Inventory.find(inventory_id)
     if not inventory:
-      raise NotFound("Inventory with id '{}' was not found.".format(inventory_id))
+        raise NotFound("Inventory with id '{}' was not found.".format(inventory_id))
     return make_response(jsonify(inventory.serialize()), status.HTTP_200_OK)
 
 
@@ -197,36 +197,36 @@ def delete_inventories(inventory_id):
         inventory.delete()
     return make_response('', status.HTTP_204_NO_CONTENT)
 
+
 ######################################################################
 # COUNT TOTAL QUANTITY OF PRODUCT WITH GIVEN NAME
 ######################################################################
 @app.route('/inventories/count', methods=['GET'])
 def count_inventories_quantity():
-	# return a list of Inventory
+    # return a list of Inventory
     name = request.args.get('name')
     if name:
         find_by_id_records = Inventory.find_by_name(name)
-        quantities = [ record.quantity for record in find_by_id_records]
+        quantities = [record.quantity for record in find_by_id_records]
         quantity_sum = sum(quantities)
-        message = {'count' : quantity_sum}
-    return make_response(jsonify(message),  status.HTTP_200_OK )
+        message = {'count': quantity_sum}
+    return make_response(jsonify(message), status.HTTP_200_OK)
 
 
 ######################################################################
 # QUERY INVENTORIES
 ######################################################################
-@app.route('/inventories/query', methods = ['GET'])
+@app.route('/inventories/query', methods=['GET'])
 def query_inventories_by_name_status():
-    name = request.args.get('name').strip()
-    status = request.args.get('status').strip()
-   
+    name = request.args.get('name')
+    status = request.args.get('status')
+
     # query by name and status
-    inventories_by_id = Inventory.find_by_name(name)
+    inventories_by_name = Inventory.find_by_name(name)
     inventories_by_status = Inventory.find_by_status(status)
-    if not inventories_by_status or not inventories_by_id :
+    if not inventories_by_status or not inventories_by_name:
         raise NotFound("Query Inventory with name '{}' and status '{}'  was not found.".format(name, status))
-    results = [inventory.serialize() for inventory in inventories_by_id  if
-                            inventory in inventories_by_status]
+    results = [inventory.serialize() for inventory in inventories_by_name if inventory in inventories_by_status]
     return make_response(jsonify(results))
 
 

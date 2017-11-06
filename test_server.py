@@ -138,16 +138,17 @@ class TestInventoryServer(unittest.TestCase):
         self.assertEqual(query_item['quantity'], 5)
 
     def test_query_inventory_found(self):
-        """ Query Inventories by Category found target"""
-        resp = self.app.get('/inventories/query', query_string = 'name=shampoo&status=new' )
+        """ Query Inventories by Status found target"""
+        resp = self.app.get('/inventories/query', query_string='name=shampoo&status=new')
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         self.assertTrue('shampoo' in resp.data)
+        self.assertFalse('conditioner' in resp.data)
         data = json.loads(resp.data)
         self.assertEqual(len(data), 1)
 
     def test_query_inventory_not_found(self):
         """ Query Inventories by field not found target"""
-        resp = self.app.get('/inventories/query', query_string = 'name=shampoo&status=used')
+        resp = self.app.get('/inventories/query', query_string='name=shampoo&status=used')
         self.assertEquals(resp.status_code, 404)
 
     def test_count_inventories_quantity(self):
@@ -182,7 +183,7 @@ class TestInventoryServer(unittest.TestCase):
         """ Mocking the 500 ERROR """
         Inventory_find_mock.side_effect = OSError()
         query_info= {'name': 'lemon tea'}
-        resp = self.app.get('/inventories/query', data = json.dumps(query_info), content_type='application/json')
+        resp = self.app.get('/inventories/query', data=json.dumps(query_info), content_type='application/json')
         self.assertEqual(resp.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     # def test_415_unsupported_media_type(self):
