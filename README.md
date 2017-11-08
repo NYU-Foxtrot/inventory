@@ -1,5 +1,5 @@
 # inventory
-This is the inventory application using [Flask microframework](http://flask.pocoo.org/) for NYU course *NYU DevOps Spring 2017 * [CSCI-GA.3033-013](http://cs.nyu.edu/courses/spring17/CSCI-GA.3033-013/)
+This is the inventory application using [Flask microframework](http://flask.pocoo.org/) for NYU course `NYU DevOps Spring 2017` [CSCI-GA.3033-013](http://cs.nyu.edu/courses/spring17/CSCI-GA.3033-013/)
 
 ## Prerequisite Installation using Vagrant
 The app requires Vagrant and VirtualBox. if you don't have this software the first step is down download and install [VirtualBox](https://www.virtualbox.org/) and [Vagrant](https://www.vagrantup.com/)
@@ -15,13 +15,26 @@ This will place you into an Ubuntu VM all set to run the code.
 
 ## Calls available
 
-    * list_inventories() -- This code is called on the URL GET /inventories, used to return all of the Inventories. No input needed.
-    * get_inventories(inventory_id): -- This code is called on the URL GET /inventories/<int:inventory_id>, used to retrieve a single Inventory. Input should be the inventory id to be retrieved.
-    * create_inventories(): -- This code is called on the URL POST /inventories, used to create a new inventory. No input needed.
-    * update_inventories(inventory_id): -- This code is called on the URL PUT /inventories/<int:inventory_id>, used to update a Inventory. Input should be the inventory id to be updated.
-    * delete_inventories(inventory_id): -- This code is called on the URL DELETE /inventories/<int:inventory_id>, used to delete a Inventory. Input should be the inventory id to be deleted.
-    * count_inventories_quantity(): -- This code is called on the URL GET /inventories/count, used to return a list of inventory. No input needed.
-    * query_inventories_by_name_status(): -- This code is called on the URL GET /inventories/query, used to query inventories by name and status. No input needed.
+    list_inventories() -- This code is called on the URL GET /inventories
+Used to return all of the Inventories. No input needed.
+
+    get_inventories(inventory_id): -- This code is called on the URL GET /inventories/<int:inventory_id>
+Used to retrieve a single Inventory. Input should be the inventory id to be retrieved.
+
+    create_inventories(): -- This code is called on the URL POST /inventories.
+Used to create a new inventory. No input needed.
+
+    update_inventories(inventory_id): -- This code is called on the URL PUT /inventories/<int:inventory_id>.
+Used to update a Inventory. Input should be the inventory id to be updated.
+
+    delete_inventories(inventory_id): -- This code is called on the URL DELETE /inventories/<int:inventory_id>. 
+Used to delete a Inventory. Input should be the inventory id to be deleted.
+
+    count_inventories_quantity(): -- This code is called on the URL GET /inventories/count.
+Used to return a list of inventory. No input needed.
+
+    query_inventories_by_name_status(): -- This code is called on the URL GET /inventories/query.
+Used to query inventories by name and status. No input needed.
     
 ## Tests
 
@@ -62,7 +75,7 @@ If the VM is no longer needed you can remove it with:
     
 ## What's featured in the project?
 
-    * server.py -- the main Service using Python Flask
-    * test_server.py -- test cases using unittest
-    * test_inventories.py -- test cases using just the Inventory model
-    * models.py -- hold your model definitions of resource
+    server.py -- the main Service using Python Flask
+    test_server.py -- test cases using unittest
+    test_inventories.py -- test cases using just the Inventory model
+    models.py -- hold your model definitions of resource
