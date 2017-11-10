@@ -40,7 +40,7 @@ for a server name 'redis' to connect to.
 """
 
 import threading
-#import enum
+# import enum
 import os
 import json
 import logging
@@ -153,9 +153,9 @@ class Inventory(object):
         #     raise DataValidationError('Invalid Inventory: missing ' + err.args[0])
         # return
 
-######################################################################
-#  S T A T I C   D A T A B S E   M E T H O D S
-######################################################################
+    ######################################################################
+    #  S T A T I C   D A T A B S E   M E T H O D S
+    ######################################################################
 
     @staticmethod
     def __next_index():
@@ -192,9 +192,9 @@ class Inventory(object):
         # Inventory.index = 0
         # return Inventory.data
 
-######################################################################
-#  F I N D E R   M E T H O D S
-######################################################################
+    ######################################################################
+    #  F I N D E R   M E T H O D S
+    ######################################################################
 
     @staticmethod
     def find(inventory_id):
@@ -268,9 +268,9 @@ class Inventory(object):
         # """
         # return [inventory for inventory in Inventory.data if inventory.name == name]
 
-######################################################################
-#  R E D I S   D A T A B A S E   C O N N E C T I O N   M E T H O D S
-######################################################################
+    ######################################################################
+    #  R E D I S   D A T A B A S E   C O N N E C T I O N   M E T H O D S
+    ######################################################################
 
     @staticmethod
     def connect_to_redis(hostname, port, password):
@@ -316,7 +316,7 @@ class Inventory(object):
             services = json.loads(vcap_services)
             creds = services['rediscloud'][0]['credentials']
             Inventory.logger.info("Conecting to Redis on host %s port %s",
-                            creds['hostname'], creds['port'])
+                                  creds['hostname'], creds['port'])
             Inventory.connect_to_redis(creds['hostname'], creds['port'], creds['password'])
         else:
             Inventory.logger.info("VCAP_SERVICES not found, checking localhost for Redis")

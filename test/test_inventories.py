@@ -5,8 +5,8 @@
 """ Test cases for Inventory Model """
 
 import unittest
-from models import Inventory, DataValidationError
-import server # to get Redis
+
+from app.models import Inventory, DataValidationError
 
 VCAP_SERVICES = {
     'rediscloud': [
@@ -14,10 +14,11 @@ VCAP_SERVICES = {
             'password': '',
             'hostname': '127.0.0.1',
             'port': '6379'
-            }
+        }
         }
     ]
 }
+
 
 ######################################################################
 #  T E S T   C A S E S
@@ -142,7 +143,7 @@ class Testinventories(unittest.TestCase):
         Inventory(0, "soap", 1, "new").save()
         inventories = Inventory.find_by_status("new")
         inventories2 = Inventory.find_by_status("used")
-        
+
         self.assertEqual(len(inventories), 2)
         self.assertEqual(len(inventories2), 0)
 
