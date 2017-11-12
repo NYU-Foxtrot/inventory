@@ -54,12 +54,6 @@ class DataValidationError(Exception):
     """ Used for an data validation errors when deserializing """
     pass
 
-
-# class ProductStatus(enum.Enum):
-#     new = 'new'
-#     openBox = 'openBox'
-#     used = 'used'
-
 ######################################################################
 # Inventory Model for database
 #   This class must be initialized with use_db(redis) before using
