@@ -33,14 +33,10 @@ from flask import Flask, jsonify, request, json, url_for, make_response, abort
 from flask_api import status  # HTTP Status Codes
 from werkzeug.exceptions import NotFound
 from models import Inventory, DataValidationError
+from . import app
 
-# Create Flask application
-app = Flask(__name__)
-
-# Pull options from environment
-DEBUG = (os.getenv('DEBUG', 'False') == 'True')
-PORT = os.getenv('PORT', '5000')
-
+# Error handlers reuire app to be initialized so we must import
+# then only after we have initialized the Flask app instance
 
 ######################################################################
 # Error Handlers
@@ -173,6 +169,7 @@ def update_inventories(inventory_id):
 
     This endpoint will update a Inventory based the body that is posted
     """
+    check_content_type('application/json')
     inventory = Inventory.find(inventory_id)
     if not inventory:
         raise NotFound("Inventory with id '{}' was not found.".format(inventory_id))
@@ -220,6 +217,7 @@ def count_inventories_quantity():
 def query_inventories_by_name_status():
     name = request.args.get('name')
     status = request.args.get('status')
+
 
     # query by name and status
     inventories_by_name = Inventory.find_by_name(name)
@@ -280,12 +278,3 @@ def initialize_logging(log_level=logging.INFO):
         app.logger.addHandler(handler)
         app.logger.setLevel(log_level)
         app.logger.info('Logging handler established')
-
-
-######################################################################
-#   M A I N
-######################################################################
-if __name__ == "__main__":
-    print "Inventory Service Starting..."
-    initialize_logging(logging.INFO)
-    app.run(host='0.0.0.0', port=int(PORT), debug=DEBUG)

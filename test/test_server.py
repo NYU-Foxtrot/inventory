@@ -180,20 +180,20 @@ class TestInventoryServer(unittest.TestCase):
         resp = self.app.post('/inventories/0')
         self.assertEqual(resp.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
-    # @patch('server.Inventory.find_by_name')
-    # def test_mock_search_data_internal_error(self, Inventory_find_mock):
-    #     """ Mocking the 500 ERROR """
-    #     Inventory_find_mock.side_effect = OSError()
-    #     query_info = {'name': 'lemon tea'}
-    #     resp = self.app.get('/inventories/query', data=json.dumps(query_info), content_type='application/json')
-    #     self.assertEqual(resp.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
+    @patch('app.models.Inventory.find_by_name')
+    def test_mock_search_data_internal_error(self, Inventory_find_mock):
+        """ Mocking the 500 ERROR """
+        Inventory_find_mock.side_effect = OSError()
+        #query_info = {'name': 'shampoo', 'status':'new'}
+        resp = self.app.get('/inventories/query', query_string='name=shampoo&status=new',content_type='application/json')
+        self.assertEqual(resp.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    # def test_415_unsupported_media_type(self):
-    #     """ Update an Inventory """
-    #     new_shampoo = {'name': 'shampoo', 'quantity': 8, 'status': 'new'}
-    #     data = json.dumps(new_shampoo)
-    #     resp = self.app.put('/inventories/1', data=data, content_type='string')
-    #     self.assertEqual(resp.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
+    def test_415_unsupported_media_type(self):
+        """ Update an Inventory """
+        new_shampoo = {'name': 'shampoo', 'quantity': 8, 'status': 'new'}
+        data = json.dumps(new_shampoo)
+        resp = self.app.put('/inventories/1', data=data, content_type='string')
+        self.assertEqual(resp.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
 
 
     ######################################################################
