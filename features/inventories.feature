@@ -1,27 +1,29 @@
-Feature: The pet store service back-end
-    As a Pet Store Owner
-    I need a RESTful catalog service
-    So that I can keep track of all my pets
+Feature: The inventory service back-end
+    As an Inventory Admin
+    I need a RESTful service
+    So that I can keep track of all my inventories
 
 Background:
-    Given the following pets
-        | id | name       | category | available |
-        |  1 | fido       | dog      | True      |
-        |  2 | kitty      | cat      | True      |
-        |  3 | leo        | lion     | True      |
+    Given the following inventories
+        | id | name        | quantity | status  |
+        |  1 | shampoo     | 5        | new     |
+        |  2 | conditioner | 3        | openBox |
+        |  3 | body lotion | 8        | used    |
 
 Scenario: The server is running
     When I visit the "Home Page"
-    Then I should see "Pet Demo RESTful Service" in the title
+    Then I should see "Inventory Demo RESTful Service" in the title
     And I should not see "404 Not Found"
 
-Scenario: Create a Pet
+Scenario: Create an Inventory
     When I visit the "Home Page"
-    And I set the "Name" to "Happy"
-    And I set the "Category" to "Hippo"
+    And I set the "Name" to "face cream"
+    And I set the "Quantity" to "12"
+    And I set the "Status" to "new"
     And I press the "Create" button
     Then I should see the message "Success"
 
+"""
 Scenario: List all pets
     When I visit the "Home Page"
     And I press the "Search" button
@@ -52,3 +54,4 @@ Scenario: Update a Pet
     And I press the "Search" button
     Then I should see "Boxer" in the results
     Then I should not see "fido" in the results
+"""
