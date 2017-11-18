@@ -229,6 +229,14 @@ def query_inventories_by_name_status():
     results = [r for r in results1 if r in results2]
     return make_response(jsonify(results))
 
+######################################################################
+# DELETE ALL PET DATA (for testing only)
+######################################################################
+@app.route('/inventories/reset', methods=['DELETE'])
+def inventories_reset():
+    """ Removes all inventories from the database """
+    Inventory.remove_all()
+    return make_response('', status.HTTP_204_NO_CONTENT)
 
 ######################################################################
 #  U T I L I T Y   F U N C T I O N S

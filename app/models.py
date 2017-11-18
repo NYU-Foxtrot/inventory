@@ -210,7 +210,7 @@ class Inventory(object):
     @staticmethod
     def __find_by(attribute, value):
         """ Generic Query that finds a key with a specific value """
-        # return [pet for pet in Pet.__data if pet.category == category]
+        # return [inventory for inventory in Inventory.__data if inventory.category == category]
         Inventory.logger.info('Processing %s query for %s', attribute, value)
         if isinstance(value, str):
             search_criteria = value.lower()  # make case insensitive
