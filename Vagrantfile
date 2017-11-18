@@ -56,7 +56,19 @@ Vagrant.configure(2) do |config|
     cd ..
     rm -fr Bluemix_CLI/
     rm linux64
-    
+    # Install PhantomJS for Selenium browser support
+    echo "\n***********************************"
+    echo " Installing PhantomJS for Selenium"
+    echo "***********************************\n"
+    sudo apt-get install -y chrpath libssl-dev libxft-dev
+    # PhantomJS https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2
+    cd ~
+    export PHANTOM_JS="phantomjs-2.1.1-linux-x86_64"
+    wget https://bitbucket.org/ariya/phantomjs/downloads/$PHANTOM_JS.tar.bz2
+    sudo tar xvjf $PHANTOM_JS.tar.bz2
+    sudo mv $PHANTOM_JS /usr/local/share
+    sudo ln -sf /usr/local/share/$PHANTOM_JS/bin/phantomjs /usr/local/bin
+    rm -f $PHANTOM_JS.tar.bz2
     # Install app dependencies
     echo "\n******************************"
     echo " Installing app dependencies"
@@ -64,6 +76,7 @@ Vagrant.configure(2) do |config|
     cd /vagrant
     sudo pip install -r requirements.txt
   SHELL
+
 
   ######################################################################
   # Add Redis docker container
