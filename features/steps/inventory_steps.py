@@ -23,7 +23,7 @@ def step_impl(context):
         data = {
             "name": row['name'],
             "quantity": int(row['quantity']),
-            "status": row['status'] #  in ['True', 'true', '1']
+            "status": row['status']
             }
         payload = json.dumps(data)
         context.resp = requests.post(create_url, data=payload, headers=headers)
