@@ -50,6 +50,12 @@ def step_impl(context, element_name, text_string):
     element.clear()
     element.send_keys(text_string)
 
+@when(u'I select the "{element_name}" to "{text_string}"')
+def step_impl(context, element_name, text_string):
+    element_id = 'inventory_' + element_name.lower()
+    element = context.driver.find_element_by_id(element_id)
+    element.send_keys(text_string)
+
 ##################################################################
 # This code works because of the following naming convention:
 # The buttons have an id in the html hat is the button text

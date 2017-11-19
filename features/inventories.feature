@@ -19,9 +19,15 @@ Scenario: Create an Inventory
     When I visit the "Home Page"
     And I set the "Name" to "face cream"
     And I set the "Quantity" to "12"
-    # And I set the "Status" to "new"
+    And I select the "Status" to "new"
     And I press the "Create" button
     Then I should see the message "Success"
+
+    When I set the "ID" to "4"
+    And I press the "Retrieve" button
+    Then I should see "face cream" in the "Name" field
+    And I should see "new" in the "Status" field
+    And I should see "12" in the "Quantity" field
 
 Scenario: Read an Inventory
     When I visit the "Home Page"
