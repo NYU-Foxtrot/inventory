@@ -9,6 +9,7 @@ import json
 import requests
 from behave import *
 from app import server
+from selenium.webdriver.support.ui import Select
 
 BASE_URL = getenv('BASE_URL', 'http://localhost:5000/')
 
@@ -53,8 +54,8 @@ def step_impl(context, element_name, text_string):
 @when(u'I select the "{element_name}" to "{text_string}"')
 def step_impl(context, element_name, text_string):
     element_id = 'inventory_' + element_name.lower()
-    element = context.driver.find_element_by_id(element_id)
-    element.send_keys(text_string)
+    element = Select(context.driver.find_element_by_id(element_id))
+    element.select_by_value(text_string)
 
 ##################################################################
 # This code works because of the following naming convention:
