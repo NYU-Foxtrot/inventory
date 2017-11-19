@@ -85,11 +85,11 @@ def step_impl(context, message):
 # We can then lowercase the name and prefix with pet_ to get the id
 ##################################################################
 
-# @then(u'I should see "{text_string}" in the "{element_name}" field')
-# def step_impl(context, text_string, element_name):
-#     element_id = 'pet_' + element_name.lower()
-#     element = context.driver.find_element_by_id(element_id)
-#     assert text_string in element.get_attribute('value')
+@then(u'I should see "{text_string}" in the "{element_name}" field')
+def step_impl(context, text_string, element_name):
+    element_id = 'inventory_' + element_name.lower()
+    element = context.driver.find_element_by_id(element_id)
+    assert text_string in element.get_attribute('value')
 
 # @when(u'I change "{element_name}" to "{text_string}"')
 # def step_impl(context, element_name, text_string):
