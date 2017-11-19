@@ -8,7 +8,7 @@ $(function () {
     function update_form_data(res) {
         $("#inventory_id").val(res.id);
         $("#inventory_name").val(res.name);
-        $("#inventory_quantity").val(res.quantity);
+        $("#inventory_quantity").val(res.quantity.toString());
         $("#inventory_status").val(res.status);
     }
 
@@ -32,7 +32,7 @@ $(function () {
     $("#create-btn").click(function () {
 
         var name = $("#inventory_name").val();
-        var quantity = $("#inventory_quantity").val();
+        var quantity = parseInt($("#inventory_quantity").val());
         var status = $("#inventory_status").val();
 
         var data = {
@@ -67,7 +67,7 @@ $(function () {
 
         var inventory_id = $("#inventory_id").val();
         var name = $("#inventory_name").val();
-        var quantity = $("#inventory_quantity").val();
+        var quantity = parseInt($("#inventory_quantity").val());
         var status = $("#inventory_status").val();
 
         var data = {
@@ -139,7 +139,7 @@ $(function () {
 
         ajax.done(function(res){
             clear_form_data()
-            flash_message("Inventory with ID [" + res.id + "] has been Deleted!")
+            flash_message("inventory with ID [" + res.id + "] has been Deleted!")
         });
 
         ajax.fail(function(res){
@@ -201,7 +201,7 @@ $(function () {
             header += '<th style="width:10%">ID</th>'
             header += '<th style="width:40%">Name</th>'
             header += '<th style="width:40%">Quantity</th>'
-            header += '<th style="width:10%">Status</th></tr>'
+            header += '<th style="width:10%">status</th></tr>'
             $("#search_results").append(header);
             for(var i = 0; i < res.length; i++) {
                 inventory = res[i];
