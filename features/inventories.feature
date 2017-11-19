@@ -23,6 +23,15 @@ Scenario: Create an Inventory
     And I press the "Create" button
     Then I should see the message "Success"
 
+Scenario: Read an Inventory
+    When I visit the "Home Page"
+    And I set the "ID" to "1"
+    And I press the "Retrieve" button
+    Then I should see the message "Success"
+    And I should see "shampoo" in the "Name" field
+    And I should see "5" in the "Quantity" field
+    And I should see "new" in the "Status" field
+
 """
 Scenario: List all pets
     When I visit the "Home Page"
