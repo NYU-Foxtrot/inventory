@@ -17,6 +17,7 @@ Inventory Store Service
 
 Paths:
 ------
+GET / - Displays a UI for Selenium testing
 GET /inventories - returns a list all of the Inventories
 GET /inventories/{id} - returns the Inventory with a given id number
 POST /inventories - creates a new Inventory record in the database
@@ -93,10 +94,11 @@ def internal_server_error(error):
 @app.route('/')
 def index():
     """ Root URL response """
-    return jsonify(name='Inventory Demo REST API Service',
-                   version='1.0',
-                   paths=url_for('list_inventories', _external=True)
-                   ), status.HTTP_200_OK
+    return app.send_static_file('index.html')
+    # return jsonify(name='Inventory Demo REST API Service',
+    #                version='1.0',
+    #                paths=url_for('list_inventories', _external=True)
+    #                ), status.HTTP_200_OK
 
 
 ######################################################################

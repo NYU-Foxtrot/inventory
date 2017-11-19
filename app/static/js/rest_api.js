@@ -8,19 +8,15 @@ $(function () {
     function update_form_data(res) {
         $("#inventory_id").val(res.id);
         $("#inventory_name").val(res.name);
-        $("#inventory_category").val(res.category);
-        if (res.available == true) {
-            $("#inventory_available").val("true");
-        } else {
-            $("#inventory_available").val("false");
-        }
+        $("#inventory_quantity").val(res.quantity);
+        $("#inventory_status").val(res.status);
     }
 
     /// Clears all form fields
     function clear_form_data() {
         $("#inventory_name").val("");
-        $("#inventory_category").val("");
-        $("#inventory_available").val("");
+        $("#inventory_quantity").val("");
+        $("#inventory_status").val("");
     }
 
     // Updates the flash message area
@@ -36,13 +32,13 @@ $(function () {
     $("#create-btn").click(function () {
 
         var name = $("#inventory_name").val();
-        var category = $("#inventory_category").val();
-        var available = $("#inventory_available").val() == "true";
+        var quantity = $("#inventory_quantity").val();
+        var status = $("#inventory_status").val();
 
         var data = {
             "name": name,
-            "category": category,
-            "available": available
+            "quantity": quantity,
+            "status": status
         };
 
         var ajax = $.ajax({
@@ -71,13 +67,13 @@ $(function () {
 
         var inventory_id = $("#inventory_id").val();
         var name = $("#inventory_name").val();
-        var category = $("#inventory_category").val();
-        var available = $("#inventory_available").val() == "true";
+        var quantity = $("#inventory_quantity").val();
+        var status = $("#inventory_status").val();
 
         var data = {
             "name": name,
-            "category": category,
-            "available": available
+            "quantity": quantity,
+            "status": status
         };
 
         var ajax = $.ajax({
@@ -143,7 +139,7 @@ $(function () {
 
         ajax.done(function(res){
             clear_form_data()
-            flash_message("inventory with ID [" + res.id + "] has been Deleted!")
+            flash_message("Inventory with ID [" + res.id + "] has been Deleted!")
         });
 
         ajax.fail(function(res){
@@ -167,26 +163,26 @@ $(function () {
     $("#search-btn").click(function () {
 
         var name = $("#inventory_name").val();
-        var category = $("#inventory_category").val();
-        var available = $("#inventory_available").val() == "true";
+        var quantity = $("#inventory_quantity").val();
+        var status = $("#inventory_status").val();
 
         var queryString = ""
 
         if (name) {
             queryString += 'name=' + name
         }
-        if (category) {
+        if (quantity) {
             if (queryString.length > 0) {
-                queryString += '&category=' + category
+                queryString += '&quantity=' + quantity
             } else {
-                queryString += 'category=' + category
+                queryString += 'quantity=' + quantity
             }
         }
-        if (available) {
+        if (status) {
             if (queryString.length > 0) {
-                queryString += '&available=' + available
+                queryString += '&status=' + status
             } else {
-                queryString += 'available=' + available
+                queryString += 'status=' + status
             }
         }
 
@@ -204,12 +200,12 @@ $(function () {
             var header = '<tr>'
             header += '<th style="width:10%">ID</th>'
             header += '<th style="width:40%">Name</th>'
-            header += '<th style="width:40%">Category</th>'
-            header += '<th style="width:10%">Available</th></tr>'
+            header += '<th style="width:40%">Quantity</th>'
+            header += '<th style="width:10%">Status</th></tr>'
             $("#search_results").append(header);
             for(var i = 0; i < res.length; i++) {
                 inventory = res[i];
-                var row = "<tr><td>"+inventory.id+"</td><td>"+inventory.name+"</td><td>"+inventory.category+"</td><td>"+inventory.available+"</td></tr>";
+                var row = "<tr><td>"+inventory.id+"</td><td>"+inventory.name+"</td><td>"+inventory.quantity+"</td><td>"+inventory.status+"</td></tr>";
                 $("#search_results").append(row);
             }
 

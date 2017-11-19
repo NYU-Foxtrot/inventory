@@ -41,8 +41,11 @@ class TestInventoryServer(unittest.TestCase):
         """ Test the Home Page """
         resp = self.app.get('/')
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
-        data = json.loads(resp.data)
-        self.assertEqual(data['name'], 'Inventory Demo REST API Service')
+        self.assertIn('Inventory Demo REST API Service', resp.data)
+        # resp = self.app.get('/')
+        # self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        # data = json.loads(resp.data)
+        # self.assertEqual(data['name'], 'Inventory Demo REST API Service')
 
     def test_get_inventory_list(self):
         """ Get a list of Inventories """
