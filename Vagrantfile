@@ -77,7 +77,6 @@ Vagrant.configure(2) do |config|
     sudo pip install -r requirements.txt
   SHELL
 
-
   ######################################################################
   # Add Redis docker container
   ######################################################################
@@ -93,6 +92,5 @@ Vagrant.configure(2) do |config|
     d.run "redis:alpine",
       args: "--restart=always -d --name redis -p 6379:6379 -v /var/lib/redis/data:/data"
   end
-
 
 end

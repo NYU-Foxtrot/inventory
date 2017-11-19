@@ -1,5 +1,6 @@
 """
 Inventory Service Runner
+
 Start the Inventory Service and initializes logging
 """
 
