@@ -32,6 +32,23 @@ Scenario: Read an Inventory
     And I should see "5" in the "Quantity" field
     And I should see "new" in the "Status" field
 
+Scenario: Update an Inventory
+    When I visit the "Home Page"
+    And I set the "Id" to "1"
+    And I press the "Retrieve" button
+    Then I should see the message "Success"
+    And I should see "shampoo" in the "Name" field
+    And I should see "5" in the "Quantity" field
+    And I should see "new" in the "Status" field
+    When I set the "Quantity" to "99"
+    And I press the "Update" button
+    Then I should see the message "Success"
+    Then I should see "99" in the "Quantity" field
+    When I press the "Clear" button
+    And I press the "Search" button
+    Then I should see "99" in the results
+    Then I should not see "5" in the results
+
 """
 Scenario: List all pets
     When I visit the "Home Page"
@@ -48,19 +65,4 @@ Scenario: List all dogs
     And I should not see "kitty" in the results
     And I should not see "leo" in the results
 
-Scenario: Update a Pet
-    When I visit the "Home Page"
-    And I set the "Id" to "1"
-    And I press the "Retrieve" button
-    Then I should see "fido" in the "Name" field
-    When I change "Name" to "Boxer"
-    And I press the "Update" button
-    Then I should see the message "Success"
-    When I set the "Id" to "1"
-    And I press the "Retrieve" button
-    Then I should see "Boxer" in the "Name" field
-    When I press the "Clear" button
-    And I press the "Search" button
-    Then I should see "Boxer" in the results
-    Then I should not see "fido" in the results
 """
