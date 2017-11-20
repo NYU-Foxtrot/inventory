@@ -55,6 +55,21 @@ Scenario: Update an Inventory
     Then I should see "99" in the results
     Then I should not see "5" in the results
 
+Scenario: List all inventories
+    When I visit the "Home Page"
+    And I press the "Search" button
+    Then I should see "body lotion" in the results
+    And I should see "conditioner" in the results
+    And I should see "shampoo" in the results
+
+Scenario: List all news
+    When I visit the "Home Page"
+    And I select the "Status" to "new"
+    And I press the "Search" button
+    Then I should see "shampoo" in the results
+    And I should not see "body lotion" in the results
+    And I should not see "conditioner" in the results
+
 """
 Scenario: List all pets
     When I visit the "Home Page"
