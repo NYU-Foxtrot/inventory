@@ -220,4 +220,44 @@ $(function () {
 
     });
 
+    // ****************************************
+    // List all inventories
+    // ****************************************
+
+    $("#list-btn").click(function () {
+
+        var ajax = $.ajax({
+            type: "GET",
+            url: "/inventories",
+            contentType:"application/json",
+            data: ''
+        })
+
+        ajax.done(function(res){
+            //alert(res.toSource())
+            $("#search_results").empty();
+            $("#search_results").append('<table class="table-striped">');
+            var header = '<tr>'
+            header += '<th style="width:10%">ID</th>'
+            header += '<th style="width:40%">Name</th>'
+            header += '<th style="width:40%">Quantity</th>'
+            header += '<th style="width:10%">status</th></tr>'
+            $("#search_results").append(header);
+            for(var i = 0; i < res.length; i++) {
+                inventory = res[i];
+                var row = "<tr><td>"+inventory.id+"</td><td>"+inventory.name+"</td><td>"+inventory.quantity+"</td><td>"+inventory.status+"</td></tr>";
+                $("#search_results").append(row);
+            }
+
+            $("#search_results").append('</table>');
+
+            flash_message("Success")
+        });
+
+        ajax.fail(function(res){
+            flash_message(res.responseJSON.message)
+        });
+
+    });
+
 })
