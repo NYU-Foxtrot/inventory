@@ -57,7 +57,7 @@ Scenario: Update an Inventory
 
 Scenario: List all inventories
     When I visit the "Home Page"
-    And I press the "Search" button
+    And I press the "List" button
     Then I should see "body lotion" in the results
     And I should see "conditioner" in the results
     And I should see "shampoo" in the results
