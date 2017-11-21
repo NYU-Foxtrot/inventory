@@ -70,6 +70,16 @@ Scenario: List all news
     And I should not see "body lotion" in the results
     And I should not see "conditioner" in the results
 
+Scenario: Delete an Inventory
+    When I visit the "Home Page"
+    And I set the "Id" to "1"
+    And I press the "Delete" button
+    Then I should see the message "inventory with ID [1] has been Deleted!"
+
+    When I press the "List" button
+    Then I should see "body lotion" in the results
+    And I should see "conditioner" in the results
+    And I should not see "shampoo" in the results
 """
 Scenario: List all pets
     When I visit the "Home Page"

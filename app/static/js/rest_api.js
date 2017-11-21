@@ -139,7 +139,7 @@ $(function () {
 
         ajax.done(function(res){
             clear_form_data()
-            flash_message("inventory with ID [" + res.id + "] has been Deleted!")
+            flash_message("inventory with ID [" + inventory_id + "] has been Deleted!")
         });
 
         ajax.fail(function(res){
