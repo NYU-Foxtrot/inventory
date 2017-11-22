@@ -83,11 +83,12 @@ Scenario: Delete an Inventory
 
 Scenario: Query an Inventory
     When I visit the "Home Page"
-    And I select the "Status" to "openBox"
-    And I press the "Search" button
+    And I set the "Name" to "body lotion"
+    And I select the "Status" to "used"
+    And I press the "Query" button
     Then I should see the message "Success"
-    And I should see "conditioner" in the results
-    And I should not see "body lotion" in the results
+    And I should see "body lotion" in the results
+    And I should not see "conditioner" in the results
     And I should not see "shampoo" in the results
 """
 Scenario: List all pets
