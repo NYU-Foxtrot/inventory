@@ -80,6 +80,15 @@ Scenario: Delete an Inventory
     Then I should see "body lotion" in the results
     And I should see "conditioner" in the results
     And I should not see "shampoo" in the results
+
+Scenario: Query an Inventory
+    When I visit the "Home Page"
+    And I select the "Status" to "openBox"
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should see "conditioner" in the results
+    And I should not see "body lotion" in the results
+    And I should not see "shampoo" in the results
 """
 Scenario: List all pets
     When I visit the "Home Page"
