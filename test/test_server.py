@@ -151,6 +151,11 @@ class TestInventoryServer(unittest.TestCase):
         data = json.loads(resp.data)
         self.assertEqual(len(data), 1)
 
+    def test_query_inventory_missing_not_found(self):
+        """ Query Inventories missing inputs not found target"""
+        resp = self.app.get('/inventories/query', query_string='status=used')
+        self.assertEquals(resp.status_code, 404)
+
     def test_query_inventory_not_found(self):
         """ Query Inventories by field not found target"""
         resp = self.app.get('/inventories/query', query_string='name=shampoo&status=used')
