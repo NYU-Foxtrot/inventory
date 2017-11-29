@@ -205,11 +205,13 @@ def count_inventories_quantity():
     # return a list of Inventory
     name = request.args.get('name')
     if name:
-        find_by_id_records = Inventory.find_by_name(name)
-        quantities = [record.quantity for record in find_by_id_records]
+        results = Inventory.find_by_name(name)
+        quantities = [record.quantity for record in results]
         quantity_sum = sum(quantities)
-        message = {'count': quantity_sum}
-    return make_response(jsonify(message), status.HTTP_200_OK)
+        inventories_by_name = Inventory.find_by_name(name)
+        results1 = [inventory.serialize() for inventory in inventories_by_name]
+        resp = {'records': results1, 'name':name, 'count': quantity_sum}
+    return make_response(jsonify(resp), status.HTTP_200_OK)
 
 
 ######################################################################
