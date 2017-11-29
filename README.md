@@ -73,6 +73,26 @@ If the VM is no longer needed you can remove it with:
 
     $ vagrant destroy
     
+
+## Behavior Test
+
+Do vagrant provision
+
+    $ vagrant up && vagrant provision
+    $ vagrant ssh
+
+Add behavior test statements and step implementations in features folder and set up environment before Behavior Test
+
+Start the server
+
+    $ python run.py
+
+Now you should be able to see the console page at: http://localhost:5000/
+
+Run behavior test and see if tests pass in all senarios 
+
+    $ behave 
+
 ## What's featured in the project?
 
     server.py -- the main Service using Python Flask
