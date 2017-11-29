@@ -9,6 +9,7 @@ Background:
         |  1 | shampoo     | 5        | new     |
         |  2 | conditioner | 3        | openBox |
         |  3 | body lotion | 8        | used    |
+        |  3 | body lotion | 2        | new     |
 
 Scenario: The server is running
     When I visit the "Home Page"
@@ -90,6 +91,17 @@ Scenario: Query an Inventory
     And I should see "body lotion" in the results
     And I should not see "conditioner" in the results
     And I should not see "shampoo" in the results
+
+Scenario: Count an Inventory by Name
+    When I visit the "Home Page"
+    And I set the "Name" to "body lotion"
+    And I press the "Count" button
+    Then I should see the message "Success"
+    And I should see "body lotion" in the results
+    And I should see "10" in the "Quantity" field
+    And I should not see "shampoo" in the results
+
+
 """
 Scenario: List all pets
     When I visit the "Home Page"
