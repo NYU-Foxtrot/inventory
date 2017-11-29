@@ -74,7 +74,9 @@ If the VM is no longer needed you can remove it with:
     $ vagrant destroy
     
 
-## Behavior Test
+## Behavior Tests
+
+This part is to do a behavior test, using Selenium automates browsers to simulate user actions, make sure every part on page works!
 
 Do vagrant provision
 
