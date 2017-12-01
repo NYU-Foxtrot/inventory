@@ -95,6 +95,19 @@ Run behavior test and see if tests pass in all senarios
 
     $ behave 
 
+
+### Swagger
+
+We use a Flask plug-in called Flask-RESTPlus to imbed Swagger documentation into your Python Flask microservice so that the Swagger docs are generated.
+
+Run the server with:
+    
+    $ python run.py
+
+Finally you can see the microservice Swagger docs at: [http://localhost:5000/](http://localhost:5000/)
+
+The front-end page will be at [http://localhost:5000/index.html](http://localhost:5000/index.html/)
+
 ## What's featured in the project?
 
     server.py -- the main Service using Python Flask
