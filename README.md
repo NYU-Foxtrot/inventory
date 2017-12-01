@@ -96,7 +96,7 @@ Run behavior test and see if tests pass in all senarios
     $ behave 
 
 
-### Swagger
+## Swagger
 
 We use a Flask plug-in called Flask-RESTPlus to imbed Swagger documentation into your Python Flask microservice so that the Swagger docs are generated.
 
