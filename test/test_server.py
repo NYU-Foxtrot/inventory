@@ -39,7 +39,7 @@ class TestInventoryServer(unittest.TestCase):
 
     def test_index(self):
         """ Test the Home Page """
-        resp = self.app.get('/')
+        resp = self.app.get('/index.html')
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         self.assertIn('Inventory Demo REST API Service', resp.data)
         # resp = self.app.get('/')
@@ -91,8 +91,7 @@ class TestInventoryServer(unittest.TestCase):
     def test_create_inventory_with_no_name(self):
         """ Create a Inventory with the name missing """
         new_inventory = {'status': 'new'}
-        data = json.dumps(new_inventory)
-        resp = self.app.post('/inventories', data=data, content_type='application/json')
+        resp = self.app.post('/inventories', data=new_inventory, content_type='application/json')
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_update_inventory(self):
@@ -109,8 +108,7 @@ class TestInventoryServer(unittest.TestCase):
     def test_update_inventory_with_no_name(self):
         """ Update a Inventory with no name """
         new_inventory = {'id': 2, 'quantity': 2, 'status': 'new'}
-        data = json.dumps(new_inventory)
-        resp = self.app.put('/inventories/2', data=data, content_type='application/json')
+        resp = self.app.put('/inventories/2', data=new_inventory, content_type='application/json')
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_update_inventory_not_found(self):

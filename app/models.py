@@ -54,6 +54,9 @@ class DataValidationError(Exception):
     """ Used for an data validation errors when deserializing """
     pass
 
+class DatabaseConnectionError(ConnectionError):
+    pass
+
 ######################################################################
 # Inventory Model for database
 #   This class must be initialized with use_db(redis) before using
