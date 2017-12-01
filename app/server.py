@@ -32,9 +32,36 @@ import sys
 import logging
 from flask import Flask, jsonify, request, json, url_for, make_response, abort
 from flask_api import status  # HTTP Status Codes
+from flask_restplus import Api, Resource, fields
 from werkzeug.exceptions import NotFound
-from models import Inventory, DataValidationError
+from app.models import Inventory, DataValidationError, DatabaseConnectionError
 from . import app
+
+######################################################################
+# Configure Swagger before initilaizing it
+######################################################################
+api = Api(app,
+          version='1.0.0',
+          title='Inventory REST API Service',
+          description='This is an Inventory server.',
+         )
+
+# This namespace is the start of the path i.e., /inventories
+ns = api.namespace('inventories', description='Inventory operations')
+
+# Define the model so that the docs reflect what can be sent
+inventory_model = api.model('Inventory', {
+    'id': fields.Integer(readOnly=True,
+                         description='The unique id assigned internally by service'),
+    'name': fields.String(required=True,
+                          description='The name of the Inventory'),
+    'quantity': fields.Integer(required=True,
+                              description='The amount of Inventory'),
+    'status': fields.String(required=True,
+                                description='Status of the Inventory (e.g. new, used, openBox)')
+
+})
+
 
 # Error handlers reuire app to be initialized so we must import
 # then only after we have initialized the Flask app instance
@@ -45,8 +72,16 @@ from . import app
 @app.errorhandler(DataValidationError)
 def request_validation_error(error):
     """ Handles Value Errors from bad data """
-    return bad_request(error)
+    message = error.message or str(error)
+    app.logger.info(message)
+    return {'status':400, 'error': 'Bad Request', 'message': message}, 400
 
+@api.errorhandler(DatabaseConnectionError)
+def database_connection_error(error):
+    """ Handles Database Errors from connection attempts """
+    message = error.message or str(error)
+    app.logger.critical(message)
+    return {'status':500, 'error': 'Server Error', 'message': message}, 500
 
 @app.errorhandler(400)
 def bad_request(error):
@@ -87,11 +122,18 @@ def internal_server_error(error):
     app.logger.info(message)
     return jsonify(status=500, error='Internal Server Error', message=message), 500
 
+######################################################################
+# GET HEALTH CHECK
+######################################################################
+@app.route('/healthcheck')
+def healthcheck():
+    """ Let them know our heart is still beating """
+    return make_response(jsonify(status=200, message='Healthy'), status.HTTP_200_OK)
 
 ######################################################################
 # GET INDEX
 ######################################################################
-@app.route('/')
+@app.route('/index.html')
 def index():
     """ Root URL response """
     return app.send_static_file('index.html')
@@ -102,139 +144,206 @@ def index():
 
 
 ######################################################################
-# LIST ALL INVENTORIES
+#  PATH: /inventories/{id}
 ######################################################################
-@app.route('/inventories', methods=['GET'])
-def list_inventories():
-    """ Returns all of the Inventories """
-    inventories = []
-    quantity = request.args.get('quantity')
-    status = request.args.get('status')
-    name = request.args.get('name')
-    if quantity:
-        q = int(quantity)
-        inventories = Inventory.find_by_quantity(q)
-    elif status:
-        inventories = Inventory.find_by_status(status)
-    elif name:
-        inventories = Inventory.find_by_name(name)
-    else:
-        inventories = Inventory.all()
-
-    results = [inventory.serialize() for inventory in inventories]
-    return make_response(jsonify(results))
-
-
-######################################################################
-# READ AN INVENTORY
-######################################################################
-@app.route('/inventories/<int:inventory_id>', methods=['GET'])
-def get_inventories(inventory_id):
+@ns.route('/<int:inventory_id>')
+@ns.param('inventory_id', 'The Inventory identifier')
+class InventoryResource(Resource):
     """
-    Retrieve a single Inventory
-
-    This endpoint will return a Inventory based on it's id
+    InventoryResource class
+    Allows the manipulation of a single Inventory
+    GET /inventory{id} - Returns an Inventory with the id
+    PUT /inventory{id} - Update an Inventory with the id
+    DELETE /inventory{id} -  Deletes an Inventory with the id
     """
-    inventory = Inventory.find(inventory_id)
-    if not inventory:
-        raise NotFound("Inventory with id '{}' was not found.".format(inventory_id))
-    return make_response(jsonify(inventory.serialize()), status.HTTP_200_OK)
+
+    #------------------------------------------------------------------
+    # RETRIEVE AN INVENTORY
+    #------------------------------------------------------------------
+    @ns.doc('get_inventories')
+    @ns.response(404, 'Inventory not found')
+    @ns.marshal_with(inventory_model)
+    def get(self, inventory_id):
+        """
+        Retrieve a single Inventory
+        This endpoint will return a Inventory based on it's id
+        """
+        app.logger.info("Request to Retrieve an inventory with id [%s]", inventory_id)
+        inventory = Inventory.find(inventory_id)
+        if not inventory:
+            raise NotFound("Inventory with id '{}' was not found.".format(inventory_id))
+        return inventory.serialize(), status.HTTP_200_OK
+
+    #------------------------------------------------------------------
+    # UPDATE AN EXISTING INVENTORY
+    #------------------------------------------------------------------
+    @ns.doc('update_inventories')
+    @ns.response(404, 'Inventory not found')
+    @ns.response(400, 'The posted Inventory data was not valid')
+    @ns.expect(inventory_model)
+    @ns.marshal_with(inventory_model)
+    def put(self, inventory_id):
+        """
+        Update an Inventory
+        This endpoint will update an Inventory based the body that is posted
+        """
+        app.logger.info('Request to Update a inventory with id [%s]', inventory_id)
+        check_content_type('application/json')
+        inventory = Inventory.find(inventory_id)
+        if not inventory:
+            #api.abort(404, "Inventory with id '{}' was not found.".format(inventory_id))
+            raise NotFound('Inventory with id [{}] was not found.'.format(inventory_id))
+        #data = request.get_json()
+        data = api.payload
+        app.logger.info(data)
+        inventory.deserialize(data)
+        inventory.id = inventory_id
+        inventory.save()
+        return inventory.serialize(), status.HTTP_200_OK
+
+    #------------------------------------------------------------------
+    # DELETE AN INVENTORY
+    #------------------------------------------------------------------
+    @ns.doc('delete_inventories')
+    @ns.response(204, 'Inventory deleted')
+    def delete(self, inventory_id):
+        """
+        Delete an Inventory
+        This endpoint will delete a Inventory based the id specified in the path
+        """
+        app.logger.info('Request to Delete a inventory with id [%s]', inventory_id)
+        inventory = Inventory.find(inventory_id)
+        if inventory:
+            inventory.delete()
+        return '', status.HTTP_204_NO_CONTENT
+
 
 
 ######################################################################
-# CREATE AN INVENTORY
+#  PATH: /inventories
 ######################################################################
-@app.route('/inventories', methods=['POST'])
-def create_inventories():
-    """
-    Creates a Inventory
-    This endpoint will create a Inventory based the data in the body that is posted
-    """
-    inventory = Inventory()
-    inventory.deserialize(request.get_json())
-    inventory.save()
-    message = inventory.serialize()
-    location_url = url_for('get_inventories', inventory_id=inventory.id, _external=True)
-    return make_response(jsonify(message), status.HTTP_201_CREATED,
-                         {
-                             'Location': location_url
-                         })
+@ns.route('/', strict_slashes=False)
+class InventoryCollection(Resource):
+    """ Handles all interactions with collections of Inventories """
+    #------------------------------------------------------------------
+    # LIST ALL INVENTORIES
+    #------------------------------------------------------------------
+    @ns.doc('list_inventories')
+    @ns.param('quantity', 'List Inventories by quantity')
+    @ns.param('status', 'List Inventories by status')
+    @ns.param('name', 'List Inventories by name')
+    @ns.marshal_list_with(inventory_model)
+    def get(self):
+        """
+        Returns all of the Inventories
+        This endpoint will return all inventories by given name, status and quantity
+        """
+        app.logger.info('Request to list Inventories...')
+        inventories = []
+        quantity = request.args.get('quantity')
+        status = request.args.get('status')
+        name = request.args.get('name')
+        if quantity:
+            q = int(quantity)
+            inventories = Inventory.find_by_quantity(q)
+        elif status:
+            inventories = Inventory.find_by_status(status)
+        elif name:
+            inventories = Inventory.find_by_name(name)
+        else:
+            inventories = Inventory.all()
+        
+
+        app.logger.info('[%s] Inventories returned', len(inventories))
+        results = [inventory.serialize() for inventory in inventories]
+        return results
+
+    #------------------------------------------------------------------
+    # ADD A NEW INVENTORY
+    #------------------------------------------------------------------
+    @ns.doc('create_inventories')
+    @ns.expect(inventory_model)
+    @ns.response(400, 'The posted data was not valid')
+    @ns.response(201, 'Inventory created successfully')
+    @ns.marshal_with(inventory_model, code=201)
+    def post(self):
+        """
+        Creates an Inventory
+        This endpoint will create an Inventory based the data in the body that is posted
+        """
+        app.logger.info('Request to Create a Inventory')
+        check_content_type('application/json')
+        inventory = Inventory()
+        app.logger.info('Payload = %s', api.payload)
+        inventory.deserialize(api.payload)
+        inventory.save()
+        app.logger.info('Inventory with new id [%s] saved!', inventory.id)
+        location_url = api.url_for(InventoryResource, inventory_id=inventory.id, _external=True)
+        return inventory.serialize(), status.HTTP_201_CREATED, {'Location': location_url}
 
 
 ######################################################################
-# UPDATE AN EXISTING INVENTORY
+#  PATH: /inventories/count
 ######################################################################
-@app.route('/inventories/<int:inventory_id>', methods=['PUT'])
-def update_inventories(inventory_id):
-    """
-    Update a Inventory
-
-    This endpoint will update a Inventory based the body that is posted
-    """
-    check_content_type('application/json')
-    inventory = Inventory.find(inventory_id)
-    if not inventory:
-        raise NotFound("Inventory with id '{}' was not found.".format(inventory_id))
-    inventory.deserialize(request.get_json())
-    inventory.id = inventory_id
-    inventory.save()
-    return make_response(jsonify(inventory.serialize()), status.HTTP_200_OK)
-
-
-######################################################################
-# DELETE A INVENTORY
-######################################################################
-@app.route('/inventories/<int:inventory_id>', methods=['DELETE'])
-def delete_inventories(inventory_id):
-    """
-    Delete a Inventory
-
-    This endpoint will delete a Inventory based the id specified in the path
-    """
-    inventory = Inventory.find(inventory_id)
-    if inventory:
-        inventory.delete()
-    return make_response('', status.HTTP_204_NO_CONTENT)
+@ns.route('/count')
+@ns.param('name', 'Count inventories by name')
+class PurchaseResource(Resource):
+    """ Count actions on an Inventory """
+    @ns.doc('count_inventories')
+    @ns.response(404, 'Inventory not found')
+    @ns.response(409, 'The Inventory is not available for count')
+    def get(self):
+        """
+        Count an Inventory
+        This endpoint will count inventory with given name
+        """
+        app.logger.info('Request to Count an Inventory')
+        name = request.args.get('name')
+        if name:
+            results = Inventory.find_by_name(name)
+            quantities = [record.quantity for record in results]
+            quantity_sum = sum(quantities)
+            inventories_by_name = Inventory.find_by_name(name)
+            results1 = [inventory.serialize() for inventory in inventories_by_name]
+        
+        resp = {'records': results1, 'name':name, 'count': quantity_sum}    
+        app.logger.info('Inventory with name [%s] has been counted!', inventory.name)
+        return resp, status.HTTP_200_OK
 
 
 ######################################################################
-# COUNT TOTAL QUANTITY OF PRODUCT WITH GIVEN NAME
+#  PATH: /inventories/query
 ######################################################################
-@app.route('/inventories/count', methods=['GET'])
-def count_inventories_quantity():
-    # return a list of Inventory
-    name = request.args.get('name')
-    if name:
-        results = Inventory.find_by_name(name)
-        quantities = [record.quantity for record in results]
-        quantity_sum = sum(quantities)
+@ns.route('/query')
+@ns.param('name', 'Query inventories by name')
+@ns.param('status', 'Query inventories by status')
+class QueryResource(Resource):
+    """ Query actions on an Inventory """
+    @ns.doc('query_inventories')
+    @ns.response(404, 'Inventory not found')
+    @ns.response(409, 'The Inventory is not available for query')
+    def get(self):
+        """
+        Query an Inventory
+        This endpoint will query inventory with given name and status
+        """
+        app.logger.info('Request to Query an Inventory')
+        name = request.args.get('name')
+        status = request.args.get('status')
         inventories_by_name = Inventory.find_by_name(name)
+        inventories_by_status = Inventory.find_by_status(status)
+        if not inventories_by_status or not inventories_by_name:
+            raise NotFound("Query Inventory with name '{}' and status '{}'  was not found.".format(name, status))
         results1 = [inventory.serialize() for inventory in inventories_by_name]
-        resp = {'records': results1, 'name':name, 'count': quantity_sum}
-    return make_response(jsonify(resp), status.HTTP_200_OK)
+        results2 = [inventory.serialize() for inventory in inventories_by_status]
+        results = [r for r in results1 if r in results2]
+            
+        app.logger.info('[%s] Inventories returned', len(results))
+        return results
 
 
 ######################################################################
-# QUERY INVENTORIES
-######################################################################
-@app.route('/inventories/query', methods=['GET'])
-def query_inventories_by_name_status():
-    name = request.args.get('name')
-    status = request.args.get('status')
-
-
-    # query by name and status
-    inventories_by_name = Inventory.find_by_name(name)
-    inventories_by_status = Inventory.find_by_status(status)
-    if not inventories_by_status or not inventories_by_name:
-        raise NotFound("Query Inventory with name '{}' and status '{}'  was not found.".format(name, status))
-    results1 = [inventory.serialize() for inventory in inventories_by_name]
-    results2 = [inventory.serialize() for inventory in inventories_by_status]
-    results = [r for r in results1 if r in results2]
-    return make_response(jsonify(results))
-
-######################################################################
-# DELETE ALL PET DATA (for testing only)
+# DELETE ALL INVENTORY DATA (for testing only)
 ######################################################################
 @app.route('/inventories/reset', methods=['DELETE'])
 def inventories_reset():
