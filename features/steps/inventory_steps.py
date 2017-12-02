@@ -33,7 +33,7 @@ def step_impl(context):
 @when(u'I visit the "home page"')
 def step_impl(context):
     """ Make a call to the base URL """
-    context.driver.get(context.base_url)
+    context.driver.get(context.base_url + '/index.html')
 
 @then(u'I should see "{message}" in the title')
 def step_impl(context, message):
