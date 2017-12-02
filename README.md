@@ -1,6 +1,6 @@
 # inventory
 
-[![Build Status](https://travis-ci.org/NYU-Foxtrot/inventory.svg?branch=moveFileToAppFolder)](https://travis-ci.org/NYU-Foxtrot/inventory)
+[![Build Status](https://travis-ci.org/NYU-Foxtrot/inventory.svg?branch=master)](https://travis-ci.org/NYU-Foxtrot/inventory)
 
 This is the inventory application using [Flask microframework](http://flask.pocoo.org/) for NYU course `NYU DevOps Spring 2017` [CSCI-GA.3033-013](http://cs.nyu.edu/courses/spring17/CSCI-GA.3033-013/)
 
