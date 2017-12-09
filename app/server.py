@@ -44,6 +44,7 @@ api = Api(app,
           version='1.0.0',
           title='Inventory REST API Service',
           description='This is an Inventory server.',
+          doc='/apidocs/'
          )
 
 # This namespace is the start of the path i.e., /inventories
@@ -133,9 +134,10 @@ def healthcheck():
 ######################################################################
 # GET INDEX
 ######################################################################
-@app.route('/index.html')
+@app.route('/', methods=['GET'])
 def index():
     """ Root URL response """
+    app.logger.info("here in method")
     return app.send_static_file('index.html')
     # return jsonify(name='Inventory Demo REST API Service',
     #                version='1.0',
