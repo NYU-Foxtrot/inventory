@@ -39,7 +39,7 @@ class TestInventoryServer(unittest.TestCase):
 
     def test_index(self):
         """ Test the Home Page """
-        resp = self.app.get('/index.html')
+        resp = self.app.get('/')
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         self.assertIn('Inventory Demo REST API Service', resp.data)
         # resp = self.app.get('/')
