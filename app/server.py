@@ -32,10 +32,24 @@ import sys
 import logging
 from flask import Flask, jsonify, request, json, url_for, make_response, abort
 from flask_api import status  # HTTP Status Codes
-from flask_restplus import Api, Resource, fields
+from flask_restplus import Api as BaseApi, Resource, fields
 from werkzeug.exceptions import NotFound
 from app.models import Inventory, DataValidationError, DatabaseConnectionError
 from . import app
+
+# https://github.com/noirbizarre/flask-restplus/issues/247
+class Api(BaseApi):
+
+    def _register_doc(self, app_or_blueprint):
+        # HINT: This is just a copy of the original implementation with the last line commented out.
+        if self._add_specs and self._doc:
+            # Register documentation before root if enabled
+            app_or_blueprint.add_url_rule(self._doc, 'doc', self.render_doc)
+        #app_or_blueprint.add_url_rule(self._doc, 'root', self.render_root)
+
+    @property
+    def base_path(self):
+        return ''
 
 ######################################################################
 # Configure Swagger before initilaizing it
@@ -44,7 +58,7 @@ api = Api(app,
           version='1.0.0',
           title='Inventory REST API Service',
           description='This is an Inventory server.',
-          doc='/apidocs/'
+          doc='/swagger/'
          )
 
 # This namespace is the start of the path i.e., /inventories
@@ -134,7 +148,7 @@ def healthcheck():
 ######################################################################
 # GET INDEX
 ######################################################################
-@app.route('/', methods=['GET'])
+@app.route('/')
 def index():
     """ Root URL response """
     app.logger.info("here in method")
