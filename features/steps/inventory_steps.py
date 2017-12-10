@@ -8,8 +8,14 @@ from os import getenv
 import json
 import requests
 from behave import *
-from app import server
+from compare import expect, ensure
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.ui import Select
+from app import server
+
+WAIT_SECONDS = 30
 
 BASE_URL = getenv('BASE_URL', 'http://localhost:5000/')
 
@@ -38,11 +44,12 @@ def step_impl(context):
 @then(u'I should see "{message}" in the title')
 def step_impl(context, message):
     """ Check the document title for a message """
-    assert message not in context.resp.text # assert message in context.driver.title
+    expect(context.driver.title).to_contain(message)
 
 @then(u'I should not see "{message}"')
 def step_impl(context, message):
-    assert message not in context.resp.text
+    error_msg = "I should not see '%s' in '%s'" % (message, context.resp.text)
+    ensure(message in context.resp.text, False, error_msg)
 
 @when(u'I set the "{element_name}" to "{text_string}"')
 def step_impl(context, element_name, text_string):
@@ -72,19 +79,33 @@ def step_impl(context, button):
 
 @then(u'I should see "{name}" in the results')
 def step_impl(context, name):
-    element = context.driver.find_element_by_id('search_results')
-    assert name in element.text
+    #element = context.driver.find_element_by_id('search_results')
+    #expect(element.text).to_contain(name)
+    found = WebDriverWait(context.driver, WAIT_SECONDS).until(
+        expected_conditions.text_to_be_present_in_element(
+            (By.ID, 'search_results'),
+            name
+        )
+    )
+    expect(found).to_be(True)
 
 @then(u'I should not see "{name}" in the results')
 def step_impl(context, name):
     element = context.driver.find_element_by_id('search_results')
-    assert name not in element.text
+    error_msg = "I should not see '%s' in '%s'" % (name, element.text)
+    ensure(name in element.text, False, error_msg)
 
 @then(u'I should see the message "{message}"')
 def step_impl(context, message):
-    element = context.driver.find_element_by_id('flash_message')
-    print(element.text)
-    assert message in element.text
+    #element = context.driver.find_element_by_id('flash_message')
+    #expect(element.text).to_contain(message)
+    found = WebDriverWait(context.driver, WAIT_SECONDS).until(
+        expected_conditions.text_to_be_present_in_element(
+            (By.ID, 'flash_message'),
+            message
+        )
+    )
+    expect(found).to_be(True)
 
 ##################################################################
 # This code works because of the following naming convention:
@@ -95,14 +116,24 @@ def step_impl(context, message):
 
 @then(u'I should see "{text_string}" in the "{element_name}" field')
 def step_impl(context, text_string, element_name):
-    element_id = 'inventory_' + element_name.lower()
-    element = context.driver.find_element_by_id(element_id)
-    assert text_string in element.get_attribute('value')
+    element_id = 'pet_' + element_name.lower()
+    #element = context.driver.find_element_by_id(element_id)
+    found = WebDriverWait(context.driver, WAIT_SECONDS).until(
+        expected_conditions.text_to_be_present_in_element_value(
+            (By.ID, element_id),
+            text_string
+        )
+    )
+    #expect(element.get_attribute('value')).to_equal(text_string)
+    expect(found).to_be(True)
 
 # @when(u'I change "{element_name}" to "{text_string}"')
 # def step_impl(context, element_name, text_string):
 #     element_id = 'pet_' + element_name.lower()
-#     element = context.driver.find_element_by_id(element_id)
+#     #element = context.driver.find_element_by_id(element_id)
+#     element = WebDriverWait(context.driver, WAIT_SECONDS).until(
+#         expected_conditions.presence_of_element_located((By.ID, element_id))
+#     )
 #     element.clear()
 #     element.send_keys(text_string)
 
