@@ -83,6 +83,7 @@ def step_impl(context, name):
 @then(u'I should see the message "{message}"')
 def step_impl(context, message):
     element = context.driver.find_element_by_id('flash_message')
+    print(element.text)
     assert message in element.text
 
 ##################################################################
