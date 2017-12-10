@@ -16,7 +16,6 @@ from selenium.webdriver.support.ui import Select
 from app import server
 
 WAIT_SECONDS = 30
-
 BASE_URL = getenv('BASE_URL', 'http://localhost:5000/')
 
 @given(u'the following inventories')
@@ -24,7 +23,7 @@ def step_impl(context):
     """ Delete all Inventories and load new ones """
     headers = {'Content-Type': 'application/json'}
     context.resp = requests.delete(context.base_url + '/inventories/reset', headers=headers)
-    assert context.resp.status_code == 204
+    expect(context.resp.status_code).to_equal(204)
     create_url = context.base_url + '/inventories'
     for row in context.table:
         data = {
@@ -34,7 +33,7 @@ def step_impl(context):
             }
         payload = json.dumps(data)
         context.resp = requests.post(create_url, data=payload, headers=headers)
-        assert context.resp.status_code == 201
+        expect(context.resp.status_code).to_equal(201)
 
 @when(u'I visit the "home page"')
 def step_impl(context):
@@ -116,7 +115,7 @@ def step_impl(context, message):
 
 @then(u'I should see "{text_string}" in the "{element_name}" field')
 def step_impl(context, text_string, element_name):
-    element_id = 'pet_' + element_name.lower()
+    element_id = 'inventory_' + element_name.lower()
     #element = context.driver.find_element_by_id(element_id)
     found = WebDriverWait(context.driver, WAIT_SECONDS).until(
         expected_conditions.text_to_be_present_in_element_value(
