@@ -3,8 +3,6 @@ applications:
   memory: 64M
   instances: 2
   domain: mybluemix.net
-  name: NYU-Foxtrot-inventory
-  host: NYU-Foxtrot-inventory
   disk_quota: 1024M
   services:
   - RedisCloud
