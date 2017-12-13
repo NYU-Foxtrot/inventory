@@ -118,3 +118,5 @@ The front-end page will be at [http://localhost:5000/](http://localhost:5000/)
     test_inventories.py -- test cases using just the Inventory model
     models.py -- hold your model definitions of resource
 
+
+
