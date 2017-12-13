@@ -107,9 +107,9 @@ Run the server with:
     
     $ python run.py
 
-Finally you can see the microservice Swagger docs at: [http://localhost:5000/](http://localhost:5000/)
+Finally you can see the microservice Swagger docs at: [http://localhost:5000/](http://localhost:5000/swagger)
 
-The front-end page will be at [http://localhost:5000/index.html](http://localhost:5000/index.html/)
+The front-end page will be at [http://localhost:5000/index.html](http://localhost:5000/)
 
 ## What's featured in the project?
 
